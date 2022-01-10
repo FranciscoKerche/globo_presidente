@@ -7,6 +7,7 @@ pacman::p_load(tidyverse, rio, lubridate)
 
 # Importar tabelas
 
+#Importar scielo
 sci <- import("Pesquisa O Globo/scielo.xlsx", setclass = "tibble") %>%
   select(author = AU, title = TI, title_2 = X1,
          title_3 = Y1, title_4 = Z1,
@@ -21,7 +22,7 @@ sci <- import("Pesquisa O Globo/scielo.xlsx", setclass = "tibble") %>%
   mutate(pages = end_page - begining_page + 1) %>%
   select(-end_page, -begining_page)
 
-
+#importar wos
 wos <- import("Pesquisa O Globo/wos.xlsx", setclass = "tibble") %>%
   mutate(origin = "Web of Science") %>%
   select(author = AF, title = TI, publication_name = SO, language = LA,
@@ -35,12 +36,14 @@ wos <- import("Pesquisa O Globo/wos.xlsx", setclass = "tibble") %>%
          doi = DI, pages = PG, subject = WC, research_area = SC)
 
 
+#Juntar ambas
+
 all_files <- sci %>%
   bind_rows(wos)
 
 
 
-
+#Encontrar o presidente entre as colunas
 find_pres <- function(base, column, word){
   base %>%
     mutate({{ column }} := str_detect(tolower(title), word)) %>%
@@ -49,6 +52,7 @@ find_pres <- function(base, column, word){
     mutate({{column}} := ifelse({{column}} ==F|is.na({{column}}), str_detect(tolower(abstract_br), word), {{column}}))
 }
 
+#Buscar para cada um
 president <- all_files %>%
   find_pres(fhc, "fernando|fhc|plano real") %>%
   find_pres(lula, "lula|lulismo") %>%
@@ -56,4 +60,5 @@ president <- all_files %>%
   find_pres(temer, "temer") %>%
   find_pres(bolsonaro, "bolsonaro|bolsonarismo")
 
-
+#Escrever excel final
+write_excel_csv(president, "final_president.csv")
