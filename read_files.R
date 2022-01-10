@@ -10,7 +10,7 @@ pacman::p_load(tidyverse, rio, lubridate)
 sci <- import("Pesquisa O Globo/scielo.xlsx", setclass = "tibble") %>%
   select(author = AU, title = TI, title_2 = X1,
          title_3 = Y1, title_4 = Z1,
-         publication_name = SO, idioma = LA, tipo = DT,
+         publication_name = SO, language = LA, type = DT,
          keywords = DE, keyword_2 = X5, keywords_br = Y5, keywords_4 = Z5,
          abstract = AB, abstract_es = X4, abstract_br = Y4,
          abstract_fr = Z4, author_afiliation = C1, email = EM,
@@ -24,9 +24,9 @@ sci <- import("Pesquisa O Globo/scielo.xlsx", setclass = "tibble") %>%
 
 wos <- import("Pesquisa O Globo/wos.xlsx", setclass = "tibble") %>%
   mutate(origin = "Web of Science") %>%
-  select(autor = AF, titulo = TI, publication_name = SO, idioma = LA,
-         tipo = DT, conferencia = CT, ano_conf = CY,
-         cidade_conf = CL, instituicao = SP,
+  select(author = AF, title = TI, publication_name = SO, language = LA,
+         type = DT, conference = CT, year_conf = CY,
+         city_conf = CL, institution = SP,
          keywords = DE, keyword_plus = ID,
          abstract = AB, author_afiliation = C1, email = EM,
          researcher_id = RI, orcid = OI, funding = FU,
@@ -38,9 +38,22 @@ wos <- import("Pesquisa O Globo/wos.xlsx", setclass = "tibble") %>%
 all_files <- sci %>%
   bind_rows(wos)
 
-find_pres <- function(base, coluna, presidente){
+
+
+
+find_pres <- function(base, column, word){
   base %>%
-    mutate(!!coluna = str_detect(tolower(titulo), presidente))
+    mutate({{ column }} := str_detect(tolower(title), word)) %>%
+    mutate({{column}} := ifelse({{column}} == F|is.na({{column}}), str_detect(tolower(keywords), word), {{column}})) %>%
+    mutate({{column}} := ifelse({{column}} ==F|is.na({{column}}), str_detect(tolower(abstract), word), {{column}})) %>%
+    mutate({{column}} := ifelse({{column}} ==F|is.na({{column}}), str_detect(tolower(abstract_br), word), {{column}}))
 }
-all_files %>%
-  find_pres(fhc, "fernando")
+
+president <- all_files %>%
+  find_pres(fhc, "fernando|fhc|plano real") %>%
+  find_pres(lula, "lula|lulismo") %>%
+  find_pres(dilma, "dilma") %>%
+  find_pres(temer, "temer") %>%
+  find_pres(bolsonaro, "bolsonaro|bolsonarismo")
+
+
