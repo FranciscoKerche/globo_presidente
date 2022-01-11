@@ -1,30 +1,43 @@
 #### Análise dos dados ####
 
 
-# importar pacotes
+# importar pacotes -------------------------------------------------------------
 
-pacman::p_load(tidyverse, rio, lubridate)
+pacman::p_load(tidyverse, rio, lubridate, wesanderson)
 
-# Visões básicas
+# Imports relevantes -----------------------------------------------------------
 
+# Tabela inicial
 president <- import("final_president.csv", setclass = "tibble")
 
+# Paleta padronizada
+palette <- wes_palette("Rushmore1", n = 5)
+
+
+
+# Trabalho de dados ------------------------------------------------------------
+
+#Transformar a base de dados em longa e não wide
 long_pres <- president %>%
   select(pub_year, fhc, lula, dilma, temer, bolsonaro) %>%
   pivot_longer(-1) %>%
   group_by(pub_year, name) %>%
   summarise(total = sum(value, na.rm = T))
 
+
+#Primeira visualização sem filtro
+
 long_pres %>%
   filter(pub_year != 2022) %>%
   ggplot(aes(pub_year, total)) +
   geom_point(aes(color = name)) +
   geom_line(aes(color = name, group = name)) +
-  geom_vline(xintercept = 1995, color = "dark green") +
-  geom_vline(xintercept = 2003, color = "blue") +
-  geom_vline(xintercept = 2011, color = "yellow") +
-  geom_vline(xintercept = 2016, color = "pink") +
-  geom_vline(xintercept = 2019, color = "red")
+  scale_color_manual(values = palette) +
+  geom_vline(xintercept = 1995, color = palette[3]) +
+  geom_vline(xintercept = 2003, color = palette[4]) +
+  geom_vline(xintercept = 2011, color = palette[2]) +
+  geom_vline(xintercept = 2016, color = palette[5]) +
+  geom_vline(xintercept = 2019, color = palette[1])
 
 long_pres %>%
   filter(pub_year != 2022) %>%
@@ -36,5 +49,7 @@ long_pres %>%
   filter(name == in_charge) %>%
   ggplot(aes(pub_year, total)) +
   geom_point(aes(color = name)) +
-  geom_line(aes(color = name, group = name))
+  geom_line(aes(color = name, group = name)) +
+  scale_color_manual(values = palette)
+
 
