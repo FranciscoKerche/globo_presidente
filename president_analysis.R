@@ -14,7 +14,6 @@ president <- import("final_president.csv", setclass = "tibble")
 palette <- wes_palette("Rushmore1", n = 5)
 
 
-
 # Trabalho de dados ------------------------------------------------------------
 
 #Transformar a base de dados em longa e não wide
