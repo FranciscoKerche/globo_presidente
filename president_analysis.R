@@ -37,3 +37,4 @@ long_pres %>%
   ggplot(aes(pub_year, total)) +
   geom_point(aes(color = name)) +
   geom_line(aes(color = name, group = name))
+
