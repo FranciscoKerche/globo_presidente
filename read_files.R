@@ -92,4 +92,3 @@ president <- all_files %>%
 
 write_excel_csv(president, "final_president.csv")
 
-
