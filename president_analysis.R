@@ -14,6 +14,7 @@ president <- import("final_president.csv", setclass = "tibble")
 palette <- wes_palette("Rushmore1", n = 5)
 
 
+
 # Trabalho de dados ------------------------------------------------------------
 
 #Transformar a base de dados em longa e não wide
@@ -52,3 +53,23 @@ long_pres %>%
   scale_color_manual(values = palette)
 
 
+big_ra <- president %>%
+  mutate(research_area = str_split(research_area, "; ")) %>%
+  unnest(research_area) %>%
+  count(research_area) %>%
+  arrange(-n) %>%
+  slice_max(n, n = 10)
+
+
+president %>%
+  filter(pub_year != 2022) %>%
+  filter(research_area %in% big_ra$research_area) %>%
+  mutate(research_area = str_split(research_area, "; ")) %>%
+  unnest(research_area) %>%
+  count(pub_year, research_area) %>%
+  arrange(-n) %>%
+  ggplot(aes(pub_year, n)) +
+  geom_line(aes(group = research_area, color = research_area), show.legend = F) +
+  geom_point(aes(color = research_area), show.legend = F) +
+  facet_wrap(~research_area)
+  
