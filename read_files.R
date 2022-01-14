@@ -20,7 +20,9 @@ import_sci <- function(base, correct){
     mutate(pages = end_page - begining_page + 1) %>%
     select(-end_page, -begining_page) %>%
     mutate_at(vars(n_ref, citation, total_citation), as.numeric) %>%
-    mutate(pref = correct)
+    mutate(pref = correct) %>%
+    mutate_if(is.character, tolower) %>%
+    mutate(origin = "Scielo")
   return(importado)
 }
 
@@ -35,9 +37,11 @@ import_wos <- function(base, correct){
                   researcher_id = RI, orcid = OI, funding = FU,
                   cited_ref = CR, n_ref = NR, citation = TC, total_citation = Z9,
                   publisher = PU, publisher_city = PI, issn = SN, pub_year = PY, volume = VL, issue = IS,
-                  doi = DI, pages = PG, subject = WC, research_area = SC) %>%
+                  doi = DI, pages = PG, subject = WC, research_area = SC,
+                  origin) %>%
            mutate_at(vars(n_ref, citation, volume), as.numeric) %>%
-           mutate(pref = correct)
+           mutate(pref = correct) %>%
+    mutate_if(is.character, tolower)
   return(importado)
 }
 
@@ -88,7 +92,15 @@ president <- all_files %>%
   find_pres(dilma, "dilma") %>%
   find_pres(temer, "temer") %>%
   find_pres(bolsonaro, "bolsonaro|bolsonarismo") %>%
-  find_pres(collor, "collor")
+  find_pres(collor, "collor") %>%
+  group_by(doi) %>%
+  mutate(is_rep = n()) %>%
+  filter(is_rep == 1 | origin == "web of science")
+
+president %>%
+  View
 
 write_excel_csv(president, "final_president.csv")
-
+president %>%
+  select(keywords, keyword_2, keywords_br, keywords_4, pub_year) %>%
+  write_excel_csv("keywords_export.csv")

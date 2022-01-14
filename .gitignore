@@ -43,3 +43,7 @@ final_president.csv
 network/
 bases/
 change_of_keywords.csv
+final_president.xlsx
+keywords_export.xlsx
+keywords_export.csv
+scrape_amazon.R
