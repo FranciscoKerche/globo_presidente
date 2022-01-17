@@ -38,7 +38,7 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-Pesquisa O Globo/
+Pesquisa_o_Globo/
 final_president.csv
 network/
 bases/
