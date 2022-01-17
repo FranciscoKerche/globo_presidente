@@ -35,8 +35,8 @@ long_pres %>%
   mutate(title = ifelse(pub_year == max(pub_year), name, NA)) %>%
   ungroup() %>%
   ggplot(aes(pub_year, total)) +
-  geom_point(aes(color = name)) +
-  geom_line(aes(color = name, group = name)) +
+  geom_point(aes(color = name), show.legend = F) +
+  geom_line(aes(color = name, group = name), show.legend = F) +
   scale_color_manual(values = palette) +
   scale_fill_manual(values = palette) +
   geom_vline(xintercept = 1995, color = palette[4]) +
@@ -44,7 +44,13 @@ long_pres %>%
   geom_vline(xintercept = 2011, color = palette[3]) +
   geom_vline(xintercept = 2016, color = palette[7]) +
   geom_vline(xintercept = 2019, color = palette[1]) +
-  geom_label_repel(aes(label = title, fill = name), color = "white")
+  geom_label_repel(aes(label = title, fill = name), color = "white", show.legend = F, alpha = 0.8) +
+  labs(title = "Número de publicações por ano",
+       subtitle = "Ascenção imensa de publicações sobre Bolsonaro",
+       x = "ano",
+       y = "número de artigos",
+       caption = "Formulação: KERCHE, F., BRASIL, A., CARVALHO, L.") +
+  theme_bw()
 
 long_pres %>%
   filter(pub_year != 2022 & pub_year > 1995) %>%
@@ -54,10 +60,20 @@ long_pres %>%
                                pub_year < 2019 & pub_year > 2015 ~"temer",
                                pub_year >= 2019 & pub_year > 2018 ~"bolsonaro")) %>%
   filter(name == in_charge) %>%
+  group_by(name) %>%
+  mutate(title = ifelse(pub_year == max(pub_year), name, NA)) %>%
   ggplot(aes(pub_year, total)) +
-  geom_point(aes(color = name)) +
-  geom_line(aes(color = name, group = name)) +
-  scale_color_manual(values = palette)
+  geom_point(aes(color = name), show.legend = F) +
+  geom_line(aes(color = name, group = name), show.legend = F) +
+  scale_color_manual(values = palette) +
+  geom_label_repel(aes(label = title, fill = name), color = "white", vjust = 0.7, hjust = 0.6, show.legend = F) +
+  scale_fill_manual(values = palette) +
+  labs(title = "Número de publicações durante mandato",
+       subtitle = "Tendência de alta, mas superada por Bolsonaro",
+       x = "ano",
+       y = "Número de artigos",
+       caption = "Formulação: KERCHE, F., BRASIL, A., CARVALHO, L.") +
+  theme_bw()
 
 
 big_ra <- president %>%
@@ -87,6 +103,10 @@ president %>%
 president %>%
   select(language, pub_year, fhc, lula, dilma, temer, bolsonaro, collor, itamar) %>%
   pivot_longer(3:9) %>%
+  mutate(language = case_when(language == "english" ~"inglês",
+                              language == "french" ~"francês",
+                              language == "portuguese" ~"português",
+                              language == "spanish" ~"espanhol")) %>%
   filter(value == T & pub_year > 1994 & pub_year < 2022) %>%
   count(language, pub_year, name) %>%
   group_by(language) %>%
@@ -101,7 +121,8 @@ president %>%
   labs(title = "Idioma dos textos por presidente",
        x = "Ano",
        y = "Número de artigos",
-       color = "Idioma")
+       color = "Idioma",
+       caption = "Formulação: KERCHE, F., BRASIL, A., CARVALHO, L.")
   
 pres_names <- c("jair bolsonaro", "dilma rousseff", "lula", "bolsonaro")
 
