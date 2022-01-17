@@ -14,13 +14,14 @@ president <- import("final_president.csv", setclass = "tibble")
 palette <- wes_palette("Rushmore1", n = 5)
 palette[6] <- "#9055A2"
 palette[2] <- "#084887"
+palette[7] <- "#7798AB"
 
 
 # Trabalho de dados ------------------------------------------------------------
 
 #Transformar a base de dados em longa e não wide
 long_pres <- president %>%
-  select(pub_year, fhc, lula, dilma, temer, bolsonaro, collor) %>%
+  select(pub_year, fhc, lula, dilma, temer, bolsonaro, collor, itamar) %>%
   pivot_longer(-1) %>%
   group_by(pub_year, name) %>%
   summarise(total = sum(value, na.rm = T))
@@ -29,7 +30,7 @@ long_pres <- president %>%
 #Primeira visualização sem filtro
 
 long_pres %>%
-  filter(pub_year != 2022 & pub_year >= 1995) %>%
+  filter(pub_year != 2022 & pub_year >= 1985) %>%
   group_by(name) %>%
   mutate(title = ifelse(pub_year == max(pub_year), name, NA)) %>%
   ungroup() %>%
@@ -39,9 +40,9 @@ long_pres %>%
   scale_color_manual(values = palette) +
   scale_fill_manual(values = palette) +
   geom_vline(xintercept = 1995, color = palette[4]) +
-  geom_vline(xintercept = 2003, color = palette[5]) +
+  geom_vline(xintercept = 2003, color = palette[6]) +
   geom_vline(xintercept = 2011, color = palette[3]) +
-  geom_vline(xintercept = 2016, color = palette[6]) +
+  geom_vline(xintercept = 2016, color = palette[7]) +
   geom_vline(xintercept = 2019, color = palette[1]) +
   geom_label_repel(aes(label = title, fill = name), color = "white")
 
@@ -84,8 +85,8 @@ president %>%
   filter(total_citation < 1000)
 
 president %>%
-  select(language, pub_year, fhc, lula, dilma, temer, bolsonaro) %>%
-  pivot_longer(3:7) %>%
+  select(language, pub_year, fhc, lula, dilma, temer, bolsonaro, collor, itamar) %>%
+  pivot_longer(3:9) %>%
   filter(value == T & pub_year > 1994 & pub_year < 2022) %>%
   count(language, pub_year, name) %>%
   group_by(language) %>%

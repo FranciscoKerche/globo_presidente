@@ -93,12 +93,10 @@ president <- all_files %>%
   find_pres(temer, "temer") %>%
   find_pres(bolsonaro, "bolsonaro|bolsonarismo") %>%
   find_pres(collor, "collor") %>%
+  find_pres(itamar, "itamar") %>%
   group_by(doi) %>%
   mutate(is_rep = n()) %>%
   filter(is_rep == 1 | origin == "web of science")
-
-president %>%
-  View
 
 write_excel_csv(president, "final_president.csv")
 president %>%
