@@ -66,7 +66,6 @@ big_ra <- president %>%
   arrange(-n) %>%
   slice_max(n, n = 10)
 
-
 president %>%
   filter(pub_year != 2022) %>%
   filter(research_area %in% big_ra$research_area) %>%
