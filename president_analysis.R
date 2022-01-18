@@ -10,6 +10,8 @@ pacman::p_load(tidyverse, rio, lubridate, wesanderson, ggrepel, janitor)
 # Tabela inicial
 president <- import("final_president.csv", setclass = "tibble")
 
+
+nrow(president)
 # Paleta padronizada
 palette <- wes_palette("Rushmore1", n = 5)
 palette[6] <- "#9055A2"
@@ -46,7 +48,7 @@ long_pres %>%
   geom_vline(xintercept = 2019, color = palette[1]) +
   geom_label_repel(aes(label = title, fill = name), color = "white", show.legend = F, alpha = 0.8) +
   labs(title = "Número de publicações por ano",
-       subtitle = "Ascenção imensa de publicações sobre Bolsonaro",
+       subtitle = "Ascensão imensa de publicações sobre Bolsonaro",
        x = "ano",
        y = "número de artigos",
        caption = "Formulação: KERCHE, F., BRASIL, A., CARVALHO, L.") +
@@ -142,5 +144,9 @@ president %>%
   ggplot(aes(pub_year, n)) +
   geom_line(aes(color = keywords, group = keywords)) +
   geom_point(aes(color = keywords))
+
+long_pres %>%
+  filter(pub_year != 2022 & pub_year >= 1985) %>%
+  write_excel_csv("president_by_year.csv")
 
 
