@@ -99,6 +99,7 @@ president <- all_files %>%
   filter(is_rep == 1 | origin == "web of science")
 
 write_excel_csv(president, "final_president.csv")
+
 president %>%
   select(keywords, keyword_2, keywords_br, keywords_4, pub_year) %>%
   write_excel_csv("keywords_export.csv")
